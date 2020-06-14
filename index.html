@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>document</title>
+</head>
+
+<body>
+
+    <canvas id="image-canvas" width="300" height="300"></canvas><br>
+    <input type="file" id="fileInput" />
+    <div id="measure"></div>
+    <style>
+        #measure {
+            position: absolute;
+            left: -10000px;
+            top: -100000px;
+        }
+        
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+
+    <script>
+        var canvas = document.getElementById('image-canvas');
+        var ctx = canvas.getContext('2d');
+        document.getElementById('fileInput').addEventListener('change', imageLoader, false);
+
+        function imageLoader() {
+            var reader = new FileReader();
+            reader.onload = function(event) {
+                var img = new Image();
+                img.onload = function() {
+                    var ct = document.getElementById('measure');
+                    ct.appendChild(img);
+                    var wrh = img.width / img.height;
+                    var newWidth = canvas.width;
+                    var newHeight = newWidth / wrh;
+                    if (newHeight > canvas.height) {
+                        newHeight = canvas.height;
+                        newWidth = newHeight * wrh;
+                    }
+                    ct.removeChild(img);
+                    canvas.height = newHeight;
+                    canvas.width = newWidth
+                    ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+                    ctx.drawImage(img, 0, 0, newWidth, newHeight);
+                }
+                img.src = reader.result;
+            }
+            reader.readAsDataURL(fileInput.files[0]);
+        }
+    </script>
+
+</body>
+
+</html>
